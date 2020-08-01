@@ -117,27 +117,67 @@ step(Gp,'-k');
 
 %proporcional
 kp=T/L;
-Gc=Kp;
-FTLA=Gc*Gp;
-FTLC=feedback(FTLA,1);
-step(FTLC,'-b');
+Gc=kp;
+FTLAP=Gc*Gp;
+FTLCP=feedback(FTLAP,1);
+step(FTLCP,'-b');
 
 % PI
 kp=0.9*T/L;
 ki=kp/(L/0.3);
 Gc=kp + tf([ki],[1 0])
-FTLA=Gc*Gp;
-FTLC=feedback(FTLA,1);
-step(FTLC,'-r');
+FTLAPI=Gc*Gp;
+FTLCPI=feedback(FTLAPI,1);
+step(FTLCPI,'-r');
 
 %PID
 kp=1.2*T/L;
 ki=kp/(2*L);
 kd=kp*(0.5*L);
 Gc=kp + tf([ki],[1 0]) + tf([kd 0],[1])
-FTLA=Gc*Gp;
-FTLC=feedback(FTLA,1);
-step(FTLC,'-m');
+FTLAPID=Gc*Gp;
+FTLCPID=feedback(FTLAPID,1);
+step(FTLCPID,'-m');
 
+xlim([0 2100]);
 legend('Sin controlador','P','PI','PID');
 %ver las graficas, por que quedan asi
+
+
+%% Análisis de estabilidad
+num=[2580];
+den=[12664 1];
+Gp = tf(num,den);
+
+%proporcional
+Kp = 5.473;
+Gc = Kp;
+FTLA = Gp*Gc;
+
+figure(6);
+rlocus(FTLA);
+
+
+%PI
+Kp = 6.77;
+Ki = 1.38;
+Gc = Kp + tf([Ki],[1 0]);
+FTLA = Gp*Gc;
+
+figure(7);
+rlocus(FTLA);
+
+%PID
+Kp = 6.178;
+Ki = 1.259;
+Kd = 0;
+Gc = Kp + tf([Ki],[1 0]) + tf([kd 0],[1]);
+FTLA = Gp*Gc;
+
+figure(8);
+rlocus(FTLA);
+
+
+
+
+
