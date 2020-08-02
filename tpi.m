@@ -178,6 +178,18 @@ figure(8);
 rlocus(FTLA);
 
 
+%% Diagramas Bode y Nyquist
+num=[2580];
+den=[12664 1];
+FTLA = tf(num,den);
+
+figure(9);
+bode(FTLA);
+
+figure(10);
+nyquist(FTLA);
+
+
 
 
 
