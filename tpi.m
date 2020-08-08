@@ -144,6 +144,18 @@ legend('Sin controlador','P','PI','PID');
 %ver las graficas, por que quedan asi
 
 
+%% Sintonizacion ultima ganancia
+Kcr=1; %no existe k critico, el sistema no se inestabiliza 
+Pcr=0; %no existe periodo critico
+EC=[12664 Kcr*2580+1]; %denominador FTLC con controlador proporcional
+
+num=[Kcr*2580]
+den=[12664 1];
+FTLA=tf(num,den);
+rlocus(FTLA);   %confirma que el sistema nunca se inestabiliza
+%NO se puede aplicar el metodo
+
+
 %% Análisis de estabilidad
 num=[2580];
 den=[12664 1];
