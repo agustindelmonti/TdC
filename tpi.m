@@ -38,10 +38,13 @@ saveas(fig,strcat(ruta,'ftlc_retardo2-1.png'));
 
 num=[2580];
 den=[12664 2581];
-Gp = tf(num,den)
+FTLC = tf(num,den);
 
-Gc = pidtune(Gp,'P')
-%pidTuner(Gp,Gc);
+den2=[12664 1];
+Gp = tf(num,den2);
+
+Gc = pidtune(FTLC,'P')
+%pidTuner(FTLC,Gc);
 
 %Despues del tuner
 Kp = 5.473;
@@ -50,7 +53,7 @@ Gc = Kp;
 fig=figure(1);
 hold on;
 FTLA = Gp*Gc;
-FTLC = feedback(FTLA,1)
+FTLC = feedback(FTLA,1) %se estabiliza en 0.999929
 step(FTLC,'-r');
 %saveas(fig,strcat(ruta,'pidtuner_p.png'));
 
@@ -59,10 +62,13 @@ step(FTLC,'-r');
 
 num=[2580];
 den=[12664 2581];
-Gp = tf(num,den)
+FTLC = tf(num,den);
 
-Gc = pidtune(Gp,'PI') 
-%pidTuner(Gp,Gc);
+den2=[12664 1];
+Gp = tf(num,den2);
+
+Gc = pidtune(FTLC,'PI') 
+%pidTuner(FTLC,Gc);
 
 %Despues del tuner
 Kp = 6.77;
@@ -71,7 +77,7 @@ Gc = Kp + tf([Ki],[1 0]);
 
 %fig=figure(1);
 FTLA = Gp*Gc;
-FTLC = feedback(FTLA,1)
+FTLC = feedback(FTLA,1) %sin error
 step(FTLC,'-k');
 %saveas(fig,strcat(ruta,'pidtuner_pi.png'));
 
@@ -80,10 +86,13 @@ step(FTLC,'-k');
 
 num=[2580];
 den=[12664 2581];
-Gp = tf(num,den)
+FTLC = tf(num,den);
 
-Gc = pidtune(Gp,'PD') 
-%pidTuner(Gp,Gc);
+den2=[12664 1];
+Gp = tf(num,den2);
+
+Gc = pidtune(FTLC,'PD') 
+%pidTuner(FTLC,Gc);
 
 %Despues del tuner
 Kp = 6.847;
@@ -92,7 +101,7 @@ Gc = Kp + tf([Kd 0],[1]);
 
 %fig=figure(1);
 FTLA = Gp*Gc;
-FTLC = feedback(FTLA,1)
+FTLC = feedback(FTLA,1) %se estabiliza en 0.999944
 step(FTLC,'-b');
 %saveas(fig,strcat(ruta,'pidtuner_pd.png'));
 
@@ -101,21 +110,26 @@ step(FTLC,'-b');
 
 num=[2580];
 den=[12664 2581];
-Gp = tf(num,den)
-Gc = pidtune(Gp,'PID')
+FTLC = tf(num,den);
 
-%pidTuner(Gp,Gc);
+den2=[12664 1];
+Gp = tf(num,den2);
+
+Gc = pidtune(FTLC,'PID')
+%pidTuner(FTLC,Gc);
 
 %Despues del tuner
 Kp = 6.178;
 Ki = 1.259;
-kd = 0;   %pidTuner no sintoniza el derivativo?
+kd = 0;
 
 Gc = Kp + tf([Ki],[1 0]) + tf([kd 0],[1]);
 
 %fig=figure(1);
-FTLC = Gp*Gc/(1+Gp*Gc)
+FTLA=Gp*Gc;
+FTLC = feedback(FTLA,1) %sin error
 step(FTLC,'-g');
+
 legend('P','PI','PD','PID');
 ylim([0 1.2]);
 saveas(fig,strcat(ruta,'pidtuner_todos.png'));
