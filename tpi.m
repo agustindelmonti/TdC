@@ -11,12 +11,11 @@ step(FTLA);
 saveas(fig,strcat(ruta,'ftla_sin_cont.png'));
 
 fig=figure(2)
-den2=[12664 2581];
-FTLC = tf(num,den2)
+FTLC = feedback(FTLA,1)
 step(FTLC);
 saveas(fig,strcat(ruta,'ftlc_sin_cont.png'));
 
-%% retardo de 2.1 segundos (solo funciona en lazo cerrado)
+%% retardo de 2.1 segundos
 
 fig=figure(3);
 num=[2580];
@@ -26,12 +25,27 @@ step(FTLA);
 saveas(fig,strcat(ruta,'ftla_retardo2-1.png'));
 %Como es de esperarse, en lazo abierto no afecta a C(t)
 %Afecta, pero requiere un mayor tiempo de retardo
+FTLASinRetardo = tf(num,den);
+FTLCSinRetardo = feedback(FTLASinRetardo,1);
 
 fig=figure(4);
-den2=[12664 2581];
-FTLC = tf(num,den2,'InputDelay',2.1) %si se cambia retardo, cambiar nombre
-step(FTLC);
-saveas(fig,strcat(ruta,'ftlc_retardo2-1.png'));
+hold on;
+t=0:0.1:55;
+FTLC = feedback(FTLA,1)
+step(t,FTLC,'-b');
+FTLA2 = tf(num,den,'InputDelay',5);
+step(t,feedback(FTLA2,1),'-g');
+FTLA3 = tf(num,den,'InputDelay',9);
+step(t,feedback(FTLA3,1),'-r');
+legend('T = 2.1','T = 5', 'T = 9');
+saveas(fig,strcat(ruta,'ftlc_retardo_varios.png'));
+
+fig=figure(5);
+hold on;
+step(FTLCSinRetardo,'-r');
+step(FTLC,'-b');
+legend('FTLC','FTLC c/retardo');
+saveas(fig,strcat(ruta,'comparacion_retardo.png'));
 
 
 %% sintonizacion de controlador P pidTuner
@@ -53,12 +67,16 @@ Gc = Kp;
 fig=figure(1);
 hold on;
 FTLA = Gp*Gc;
-FTLC = feedback(FTLA,1) %se estabiliza en 0.999929
-step(FTLC,'-r');
-%saveas(fig,strcat(ruta,'pidtuner_p.png'));
+FTLCP = feedback(FTLA,1) %se estabiliza en 0.999929
+step(FTLCP,'-r');
+step(FTLC,'-b');
+legend('Kp=5.473','Sin controlador');
+ylim([0 1.2]);
+xlim([0 30]);
+saveas(fig,strcat(ruta,'pidtuner_p.png'));
 
 
-% sintonizacion de controlador PI
+%% sintonizacion de controlador PI pidTuner
 
 num=[2580];
 den=[12664 2581];
@@ -75,14 +93,19 @@ Kp = 6.77;
 Ki = 1.38;
 Gc = Kp + tf([Ki],[1 0]);
 
-%fig=figure(1);
+fig=figure(1);
+hold on;
 FTLA = Gp*Gc;
-FTLC = feedback(FTLA,1) %sin error
-step(FTLC,'-k');
-%saveas(fig,strcat(ruta,'pidtuner_pi.png'));
+FTLCPI = feedback(FTLA,1) %sin error
+step(FTLCPI,'-r');
+step(FTLC,'-b');
+legend('Kp=6.77, Ki=1.38','Sin controlador');
+ylim([0 1.2]);
+xlim([0 30]);
+saveas(fig,strcat(ruta,'pidtuner_pi.png'));
 
 
-% sintonizacion de controlador PD
+%% sintonizacion de controlador PD pidTuner
 
 num=[2580];
 den=[12664 2581];
@@ -99,14 +122,19 @@ Kp = 6.847;
 Kd = 0;  
 Gc = Kp + tf([Kd 0],[1]);
 
-%fig=figure(1);
+fig=figure(1);
+hold on;
 FTLA = Gp*Gc;
-FTLC = feedback(FTLA,1) %se estabiliza en 0.999944
+FTLCPD = feedback(FTLA,1) %se estabiliza en 0.999944
+step(FTLCPD,'-r');
 step(FTLC,'-b');
-%saveas(fig,strcat(ruta,'pidtuner_pd.png'));
+legend('Kp=6.85, Kd=0','Sin controlador');
+ylim([0 1.2]);
+xlim([0 30]);
+saveas(fig,strcat(ruta,'pidtuner_pd.png'));
 
 
-% sintonizacion de controlador PID
+%% sintonizacion de controlador PID pidTuner
 
 num=[2580];
 den=[12664 2581];
@@ -125,14 +153,16 @@ kd = 0;
 
 Gc = Kp + tf([Ki],[1 0]) + tf([kd 0],[1]);
 
-%fig=figure(1);
+fig=figure(1);
+hold on;
 FTLA=Gp*Gc;
-FTLC = feedback(FTLA,1) %sin error
-step(FTLC,'-g');
-
-legend('P','PI','PD','PID');
+FTLCPID = feedback(FTLA,1) %sin error
+step(FTLCPID,'-r');
+step(FTLC,'-b');
+legend('Kp=6.18, Ki=1.26, Kd=0','Sin controlador');
 ylim([0 1.2]);
-saveas(fig,strcat(ruta,'pidtuner_todos.png'));
+xlim([0 30]);
+saveas(fig,strcat(ruta,'pidtuner_pid.png'));
 
 
 %% sintonizacion pidTuner con retardo P
