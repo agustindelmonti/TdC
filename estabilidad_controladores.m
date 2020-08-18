@@ -5,7 +5,7 @@ den=[12664 1];
 Gp = tf(num,den)
 
 %% Proporcional
-kp = [2,10,45];
+kp = [2,5,7];
 figure(1)
 hold on;
 for i = 1:length(kp)

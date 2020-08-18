@@ -213,69 +213,7 @@ step(FTLC);
 saveas(fig,strcat(ruta,'pidtuner_retraso2-1_pi.png'));
 
 
-%% sintonizacion metodo de la curva de reaccion del proceso
-fig=figure(5);
-hold on;
 
-k=2580;
-L=2.1; % con L=7.71, sistema criticamente estable, por que?? --> si aumenta el retraso tiene que disminuir kp para que el sistema sea estable
-T=12664;
-num=[k];
-den=[T 1];
-Gp = tf(num,den,'InputDelay',L); %si se usa la funcion con retardo para calcular FTLC con controlador da cualquier cosa
-FTLC=feedback(Gp,1);  %esta da bien con un Gp con retardo, entonces lo demas tambien deberia estar bien, quizas es un error grafico
-%step(FTLC,'-k'); %si se grafica junto con los otros no se ve bien, porque es mucho mas lenta la respuesta (L=2.1)
-                 %grafica parecida en cuato a tiempo de respuesta (L=20000)
-                 %Lo anterior es valido usando los valores de parametros de la tabla
-                 %Poniendo valores distintos, por ej kp=2(en vez de 6), se tiene una respues similar con valores normales de retardo
-                 
-
-%proporcional
-kp=T/L  %T/L=6.3 (L=2000) hace inestable el sistema, por que el valor de la tabla no da estable??
-Gc=kp;
-FTLAP=Gc*Gp;
-FTLCP=feedback(FTLAP,1);
-%step(FTLCP,'-b');
-
-% PI
-kp=1.001%0.9*T/L
-ki=0.0000000000001%kp/(L/0.3)
-Gc=kp + tf([ki],[1 0]);
-FTLAPI=Gc*Gp;
-FTLCPI=feedback(FTLAPI,1);
-step(FTLCPI,'-r');
-
-figure(6);
-bode(FTLAPI);
-
-%PID  provoca error grafico al graficarlo junto con los otros
-kp=1.2*T/L
-ki=kp/(2*L)
-kd=kp*(0.5*L)
-Gc=kp + tf([ki],[1 0]) + tf([kd 0],[1]);
-FTLAPID=Gc*Gp;
-FTLCPID=feedback(FTLAPID,1);
-%step(FTLCPID,'-m');
-
-%xlim([0 100]);
-legend('Sin controlador','P','PI','PID');
-saveas(fig,strcat(ruta,'curva_reaccion_todos.png'));
-%ver las graficas, por que quedan asi
-
-
-%% Sintonizacion ultima ganancia
-Kcr=1; %no existe k critico, el sistema no se inestabiliza 
-Pcr=0; %no existe periodo critico
-EC=[12664 Kcr*2580+1]; %denominador FTLC con controlador proporcional
-
-num=[Kcr*2580]
-den=[12664 1];
-FTLA=tf(num,den);
-
-fig=figure(1);
-rlocus(FTLA);   %confirma que el sistema nunca se inestabiliza
-saveas(fig,strcat(ruta,'rlocus_utl_ganancia.png'));
-%NO se puede aplicar el metodo
 
 
 

@@ -20,8 +20,8 @@ legend('CA(t)');
 
 %% Con accion controlador
 
-Kp = 6.178;
-Ki = 1.259;
+Kp = 2.181;
+Ki = 0; 
 kd = 0;   
 
 Gc = Kp + tf([Ki],[1 0]) + tf([kd 0],[1]);
@@ -32,7 +32,33 @@ bode(FTLA);
 
 FTLC = feedback(FTLA, 1);
 
+
+figure(3)
+nyquist(FTLC)
+%%
 figure(1);
 lsim(FTLC,x1,t1);
 title('Respuesta SPO a entrada senoidal');
 legend('CA(t)');
+
+%%
+Kp = 2.181;
+Ki = 0; 
+kd = 0;   
+Gc = Kp + tf([Ki],[1 0]) + tf([kd 0],[1]);
+
+Gcom = tf([16 1],[2 1]);
+FTLA1 = Gc*Gp * Gcom
+
+figure(2)
+bode(FTLA,FTLA1);
+
+FTLC2 = feedback(FTLA1, 1);
+
+%%
+
+figure(3)
+nyquist(FTLC, FTLC2)
+
+figure(4)
+step(FTLC, FTLC2)
